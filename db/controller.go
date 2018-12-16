@@ -45,12 +45,14 @@ type DBStats struct {
 
 func NewDB(dbConfig *DBParameter) (*DB, error) {
 	conf := gomysql.NewConfig()
+	conf.User = dbConfig.User
+	conf.Passwd = dbConfig.Passwd
+	conf.Net=dbConfig.Net
+	conf.Addr=dbConfig.Addr
+	conf.DBName = dbConfig.DBName
 	conf.WriteTimeout = dbConfig.WriteTimeout
 	conf.ReadTimeout = dbConfig.ReadTimeout
 	conf.Timeout = dbConfig.Timeout
-	conf.User = dbConfig.User
-	conf.Passwd = dbConfig.Passwd
-	conf.DBName = dbConfig.DBName
 
 
 	formatStr := conf.FormatDSN()
@@ -60,6 +62,12 @@ func NewDB(dbConfig *DBParameter) (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	err=db.Ping()
+	if err != nil {
+		return nil, err
+	}
+
 	return &DB{
 		sqlDB:  db,
 		config: dbConfig,
