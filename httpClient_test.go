@@ -1,4 +1,4 @@
-package http
+package dbex
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 )
 
 func TestGetURL(t *testing.T) {
-	n,_:=NewClient("127.0.0.1","8888",5,5,10)
+	n,_:=newClient("127.0.0.1","8888",5,5,10)
 
 
 	t.Logf("GetURL:%s\n",n.URL())
@@ -14,7 +14,7 @@ func TestGetURL(t *testing.T) {
 }
 
 func TestRequester_GetPostURL(t *testing.T) {
-	n,_:=NewClient("www.yahoo.com.tw","8888",5,5,1)
+	n,_:=newClient("www.yahoo.com.tw","8888",5,5,1)
 
 	c:=&struct{
 		SessionID string
@@ -31,7 +31,7 @@ func TestRequester_GetPostURL(t *testing.T) {
 	t.Logf("GetPostURI:%s\n",n.PostURI())
 }
 func TestPOST(t *testing.T) {
-	n,_:=NewClient("www.yahoo.com.tw","8888",5,5,1)
+	n,_:=newClient("www.yahoo.com.tw","8888",5,5,1)
 
 
 	c:=&struct{

@@ -1,4 +1,4 @@
-package log
+package dbex
 
 import (
 	"time"
@@ -18,15 +18,6 @@ const (
 	LevelPanic   Level = 4
 )
 
-//type Logger interface {
-//	SetLogFileName(name string)
-//	SetLevel(level Level)
-//	ActiveLog(active bool)
-//	ActiveLogFile(active bool)
-//	Log(level Level, msg string)
-//	LogFile(level Level, v ...interface{})
-//}
-
 type Logger struct {
 	level         Level
 	logFileName   string
@@ -34,7 +25,7 @@ type Logger struct {
 	activeLogFile bool
 }
 
-func NewLogger(fileNamePrefix string) (*Logger, error) {
+func newLogger(fileNamePrefix string) (*Logger, error) {
 	l := &Logger{
 		level:         LevelWarning,
 		logFileName:   fileNamePrefix,

@@ -1,4 +1,4 @@
-package http
+package dbex
 
 import (
 	"errors"
@@ -9,15 +9,7 @@ import (
 )
 
 
-type Client interface{
-	URL()string
-	SetPostURI(path string ,queryPair map[string]string)error
-	PostURI()string
-	PostQuery()string
-	Post()(string,error)
-}
-
-type client struct{
+type httpClient struct{
 	address string
 	port string
 	url string
@@ -25,8 +17,8 @@ type client struct{
 	postURI string
 	postQuery string
 }
-func NewClient(address,port string,connectTimeout,handshakeTimeout,requestTimeout int) (Client,error){
-	re:= &client{
+func newClient(address,port string,connectTimeout,handshakeTimeout,requestTimeout int) (*httpClient,error){
+	re:= &httpClient{
 		address:address,
 		port:port,
 		url:"http://" + address + ":" + port + "/",
@@ -49,14 +41,14 @@ func NewClient(address,port string,connectTimeout,handshakeTimeout,requestTimeou
 	return re,nil
 }
 
-func (re *client)URL()string{
+func (re *httpClient)URL()string{
 	return re.url
 }
 
 //SetPostURI
 //queryPair is a map , key is query key, value is query value. eg.  ["data"]{"xxxx"} => data=xxxx
 //query => data=""&age=33....
-func (re *client)SetPostURI(path string, queryPair map[string]string)error{
+func (re *httpClient)SetPostURI(path string, queryPair map[string]string)error{
 	if len(queryPair)<=0{
 		return errors.New("query pair is len=0")
 	}
@@ -73,14 +65,14 @@ func (re *client)SetPostURI(path string, queryPair map[string]string)error{
 }
 
 //Get after set post url
-func (re *client)PostURI()string{
+func (re *httpClient)PostURI()string{
 	return re.postURI
 }
 
-func (re *client)PostQuery()string{
+func (re *httpClient)PostQuery()string{
 	return re.postQuery
 }
-func (re *client)Post()(string,error){
+func (re *httpClient)Post()(string,error){
 	resp,err:=re.netClient.Post(re.postURI,"application/x-www-form-urlencoded",strings.NewReader(re.postQuery))
 
 	if err != nil {

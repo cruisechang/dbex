@@ -1,44 +1,37 @@
 package dbex
 
 import (
-	"github.com/cruisechang/dbex/log"
-	"github.com/cruisechang/dbex/http"
-	"github.com/cruisechang/dbex/db"
-	"github.com/cruisechang/dbex/config"
 	"time"
 )
-
 type dbex struct {
-	Configurer *config.Configurer
-	DB         *db.DB
-	Logger     *log.Logger
-	HttpServer *http.Server
+	Configure  *config
+	DB         *DB
+	Logger     *Logger
+	HttpServer *httpServer
 }
 
 func NewDBEX(configFilePath string) (*dbex, error) {
 
-	conf, err := config.NewConfigurer(configFilePath)
+	conf, err := newConfigurer(configFilePath)
 	if err != nil {
 		return nil, err
 	}
 	logFile := conf.GetLoggerConfig().LogFileNamePrefix
-	logger, err := log.NewLogger(logFile)
+	logger, err := newLogger(logFile)
 
 	if err != nil {
 		return nil, err
 	}
-
-
 
 	dbc := conf.GetDBConfig()
 	tm, _ := time.ParseDuration(dbc.Timeout)
 	rm, _ := time.ParseDuration(dbc.ReadTimeout)
 	wm, _ := time.ParseDuration(dbc.WriteTimeout)
 
-	dbConf := &db.DBParameter{
+	dbConf := &dbParameter{
 		DriverName:   dbc.DriverName,
 		User:         dbc.User,
-		Passwd:       dbc.Password,
+		Password:     dbc.Password,
 		Net:          dbc.Net,
 		Addr:         dbc.Address,
 		DBName:       dbc.DBName,
@@ -46,15 +39,15 @@ func NewDBEX(configFilePath string) (*dbex, error) {
 		ReadTimeout:  rm,
 		WriteTimeout: wm,
 	}
-	db, err := db.NewDB(dbConf)
+	db, err := newDB(dbConf)
 
 	if err != nil {
 		return nil, err
 	}
 
-	httpConf:=conf.GetHTTPConfig()
+	httpConf := conf.GetHTTPConfig()
 
-	httpParams := &http.ServerParameters{
+	httpParams := &httpParameter{
 		Address:        httpConf.Address,
 		Port:           httpConf.Port,
 		ReadTimeout:    time.Second * time.Duration(httpConf.ReadTimeoutSecond),
@@ -63,17 +56,16 @@ func NewDBEX(configFilePath string) (*dbex, error) {
 		MaxHeaderBytes: httpConf.MaxHeaderBytes,
 	}
 
-	hs,err:=http.NewServer(httpParams)
+	hs, err := NewHTTPServer(httpParams)
 
 	if err != nil {
 		return nil, err
 	}
 
-
 	return &dbex{
 		Logger:     logger,
-		Configurer: conf,
+		Configure:  conf,
 		DB:         db,
-		HttpServer:hs,
+		HttpServer: hs,
 	}, nil
 }

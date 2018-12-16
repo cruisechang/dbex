@@ -1,15 +1,15 @@
-package db
+package dbex
 
 import (
 	"database/sql"
-	gomysql "github.com/go-sql-driver/mysql"
+	goMysql "github.com/go-sql-driver/mysql"
 	"time"
 )
 
-type DBParameter struct {
+type dbParameter struct {
 	DriverName   string
 	User         string        // Username
-	Passwd       string        // Password (requires User)
+	Password       string        // Password (requires User)
 	Net          string        // Network type
 	Addr         string        // Network address (requires Net)
 	DBName       string        // Database name
@@ -19,7 +19,7 @@ type DBParameter struct {
 }
 type DB struct {
 	sqlDB  *sql.DB
-	config *DBParameter
+	config *dbParameter
 }
 
 
@@ -43,10 +43,10 @@ type DBStats struct {
 //writeTimeout I/O write timeout
 //timeout timeout for establishing connections
 
-func NewDB(dbConfig *DBParameter) (*DB, error) {
-	conf := gomysql.NewConfig()
+func newDB(dbConfig *dbParameter) (*DB, error) {
+	conf := goMysql.NewConfig()
 	conf.User = dbConfig.User
-	conf.Passwd = dbConfig.Passwd
+	conf.Passwd = dbConfig.Password
 	conf.Net=dbConfig.Net
 	conf.Addr=dbConfig.Addr
 	conf.DBName = dbConfig.DBName
@@ -58,32 +58,35 @@ func NewDB(dbConfig *DBParameter) (*DB, error) {
 	formatStr := conf.FormatDSN()
 
 	//db, err := sql.Open(driverName, driverSourceName)
-	db, err := sql.Open(dbConfig.DriverName, formatStr)
+	sdb, err := sql.Open(dbConfig.DriverName, formatStr)
 	if err != nil {
 		return nil, err
 	}
 
-	err=db.Ping()
+	err=sdb.Ping()
 	if err != nil {
 		return nil, err
 	}
 
 	return &DB{
-		sqlDB:  db,
+		sqlDB:  sdb,
 		config: dbConfig,
 	}, nil
+}
+
+func(db *DB)GetSQLDB()*sql.DB {
+	return db.sqlDB
 }
 
 func (db *DB) Close() {
 	db.sqlDB.Close()
 }
-func(db *DB)GetSQLDB()*sql.DB {
-	return db.sqlDB
-}
-func (db *DB) Ping() error {
+/*
+
+func (db *db) Ping() error {
 	return db.sqlDB.Ping()
 }
-func (db *DB) Stats() *DBStats {
+func (db *db) Stats() *DBStats {
 	s := db.sqlDB.Stats()
 	return &DBStats{
 		MaxOpenConnections: s.MaxOpenConnections,
@@ -99,6 +102,7 @@ func (db *DB) Stats() *DBStats {
 		MaxLifetimeClosed: s.MaxLifetimeClosed,
 	}
 }
+*/
 func (db *DB) SelectTableNames() ([]string, error) {
 	res := make([]string, 0)
 

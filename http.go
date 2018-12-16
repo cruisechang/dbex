@@ -1,4 +1,4 @@
-package http
+package dbex
 
 import (
 	"context"
@@ -14,15 +14,7 @@ import (
 	"fmt"
 )
 
-//Service is a httpApi service for http request operation.
-//type Server interface {
-//	Start()error
-//	Stop()
-//	GetRealAddr(r *goHTTP.Request) string
-//	RegisterHandler(pattern string, handler goHTTP.Handler)
-//
-//}
-type ServerParameters struct {
+type httpParameter struct {
 	Address        string
 	Port           string
 	ReadTimeout    time.Duration
@@ -31,14 +23,14 @@ type ServerParameters struct {
 	MaxHeaderBytes int
 	Handler        goHTTP.Handler //nil for gorilla mux
 }
-type Server struct {
+type httpServer struct {
 	server *goHTTP.Server
 	router *mux.Router
 	done   chan int
 }
 
 //NewService make a new SocketManager
-func NewServer(params *ServerParameters) (s *Server, err error) {
+func NewHTTPServer(params *httpParameter) (s *httpServer, err error) {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -53,7 +45,7 @@ func NewServer(params *ServerParameters) (s *Server, err error) {
 
 		r := mux.NewRouter()
 
-	sv := &Server{
+	sv := &httpServer{
 		router: r,
 		done:   make(chan int),
 		server: &goHTTP.Server{
@@ -63,7 +55,6 @@ func NewServer(params *ServerParameters) (s *Server, err error) {
 			WriteTimeout:   params.WriteTimeout,
 			IdleTimeout:    params.IdleTimeout,
 			MaxHeaderBytes: params.MaxHeaderBytes,
-			//MaxHeaderBytes: 1 << 20,
 		},
 	}
 
@@ -72,7 +63,7 @@ func NewServer(params *ServerParameters) (s *Server, err error) {
 }
 
 //Start starts service.
-func (s *Server) Start() error{
+func (s *httpServer) Start() error{
 	go func(){
 		defer func() {
 			if r := recover(); r != nil {
@@ -87,17 +78,17 @@ func (s *Server) Start() error{
 }
 
 //Stop is used to remove lobbyClient
-func (s *Server) Stop() {
+func (s *httpServer) Stop() {
 	s.done <- 0
 }
-func (s *Server) shutdown() {
+func (s *httpServer) shutdown() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := s.server.Shutdown(ctx); err != nil {
 	}
 	os.Exit(0)
 }
-func (s *Server) handleCtrlC() {
+func (s *httpServer) handleCtrlC() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
@@ -106,28 +97,12 @@ func (s *Server) handleCtrlC() {
 	}()
 }
 
-func (s *Server)GetRouter()*mux.Router{
+func (s *httpServer)GetRouter()*mux.Router{
 	return s.router
 }
 
-//func (s *Server) HandleFunc(path string, f func(goHTTP.ResponseWriter, *goHTTP.Request)) *mux.Route {
-//
-//	return s.router.HandleFunc(path, f)
-//
-//}
-//
-//func (s *Server) Handle(path string, handler goHTTP.Handler) *mux.Route {
-//
-//	return s.router.Handle(path, handler)
-//
-//}
-//func (s *Server)Methods(method string)*mux.Route{
-//	return s.router.Methods(method)
-//}
-
-
 //Hold 如果主程式沒有hold住，就呼叫這個，主程式有就不需要。
-func (s *Server) Hold() {
+func (s *httpServer) Hold() {
 	s.handleCtrlC()
 
 	defer func() {
@@ -147,59 +122,7 @@ func (s *Server) Hold() {
 
 }
 
-/*
-func requestHandler(w goHTTP.ResponseWriter, r *goHTTP.Request) {
-
-	if r := recover(); r != nil {
-	}
-
-	var params = ""
-	var path = ""
-
-	if r.Method == goHTTP.MethodGet {
-		params = r.URL.Query().Get("params")
-	} else {
-		params = strings.TrimSpace(r.FormValue("params"))
-	}
-
-	fmt.Printf("Method : %s %s \n", r.Method, params)
-
-	if len(params) == 0 {
-		goHTTP.Error(w, "httpAPI params len==0", goHTTP.StatusBadRequest)
-		return
-	}
-
-	//b, err := encode.Base64Decode(params)
-	b, err := base64.StdEncoding.DecodeString(params)
-	if err != nil {
-		goHTTP.Error(w, "httpAPI params base64 decode error", goHTTP.StatusBadRequest)
-		return
-	}
-
-	// fmt.Printf("params : %v \n", string(b))
-
-	path = r.URL.Path
-	path = strings.TrimPrefix(r.URL.Path, "/")
-
-	re := Response{}
-	if err := json.Unmarshal(b, &re);err!=nil{
-
-	}
-
-	//encode.JSONDecodeToStruct(b, &re)
-
-	fmt.Printf("path :%s Response : %+v \n", path, re)
-
-	//pass path(grabRedEnv) and Response
-	//ex: response=map["grabRedEnv"]
-	writeParamsChan(map[string]Response{path: re})
-
-	// w.Write(b)
-
-}
-*/
-
-func (s *Server) GetRealAddr(r *goHTTP.Request) string {
+func (s *httpServer) GetRealAddr(r *goHTTP.Request) string {
 
 	remoteIP := ""
 	// the default is the originating ip. but we try to find better options because this is almost

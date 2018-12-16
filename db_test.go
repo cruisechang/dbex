@@ -1,7 +1,6 @@
-package db
+package dbex
 
 import (
-	cconf "github.com/cruisechang/dbex/config"
 	"reflect"
 	"testing"
 
@@ -12,7 +11,7 @@ import (
 
 func TestNewDB(t *testing.T){
 
-	conf, err := cconf.NewConfigurer("dbexConfig.json")
+	conf, err := NewConfigurer("dbexConfig.json")
 	if err != nil {
 		t.Fatalf("TestNewDB err=%s", err.Error())
 	}
@@ -37,7 +36,7 @@ func TestNewDB(t *testing.T){
 	dbConf := &DBParameter{
 		DriverName:dbc.DriverName,
 		User:         dbc.User,
-		Passwd:       dbc.Password,
+		Password:       dbc.Password,
 		Net:          dbc.Net,
 		Addr:         dbc.Address,
 		DBName:       dbc.DBName,
@@ -46,7 +45,7 @@ func TestNewDB(t *testing.T){
 		WriteTimeout: wm,
 
 	}
-	db, err := NewDB(dbConf)
+	db, err := newDB(dbConf)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -55,8 +54,8 @@ func TestNewDB(t *testing.T){
 
 }
 
-func getDB()*DB{
-	conf, _ := cconf.NewConfigurer("dbexConfig.json")
+func getDB()*db{
+	conf, _ := NewConfigurer("dbexConfig.json")
 
 	dbc := conf.GetDBConfig()
 
@@ -68,7 +67,7 @@ func getDB()*DB{
 	dbConf := &DBParameter{
 		DriverName:dbc.DriverName,
 		User:         dbc.User,
-		Passwd:       dbc.Password,
+		Password:       dbc.Password,
 		Net:          dbc.Net,
 		Addr:         dbc.Address,
 		DBName:       dbc.DBName,
@@ -77,7 +76,7 @@ func getDB()*DB{
 		WriteTimeout: wm,
 
 	}
-	db, _ := NewDB(dbConf)
+	db, _ := newDB(dbConf)
 	return db
 }
 
@@ -127,7 +126,8 @@ func getDB()*DB{
 func TestDB_Stats(t *testing.T) {
 
 	db:=getDB()
-	dbStats := db.Stats()
+	sdb:=db.GetSQLDB()
+	dbStats := sdb.Stats()
 	defer db.Close()
 	t.Logf("db stats =%+v", dbStats)
 

@@ -1,4 +1,4 @@
-package config
+package dbex
 
 import (
 	"io/ioutil"
@@ -9,16 +9,16 @@ import (
 )
 
 //Config config main struct
-type Configurer struct {
+type config struct {
 	data confData
 }
 
 //NewConfig make a new config struct
-func NewConfigurer(configFileName string) (*Configurer, error) {
+func newConfigurer(configFileName string) (*config, error) {
 
 	configFilePath := getFilePosition(configFileName)
 
-	cf := &Configurer{
+	cf := &config{
 		data: confData{},
 	}
 	if err := cf.loadConfig(configFilePath); err != nil {
@@ -28,7 +28,7 @@ func NewConfigurer(configFileName string) (*Configurer, error) {
 }
 
 //LoadConfig loads config file.
-func (c *Configurer) loadConfig(filePath string) error {
+func (c *config) loadConfig(filePath string) error {
 
 	b, err := ioutil.ReadFile(filePath)
 	if err != nil {
@@ -87,63 +87,23 @@ type loggerConf struct {
 	LogFileNamePrefix string
 }
 
-//http
-//func (c *Configurer) HttpServerAddress() (addr string) {
-//	return c.data.HttpServer.Address
-//}
-//func (c *Configurer) HttpServerPort() (port string) {
-//	return c.data.HttpServer.Port
-//}
-//
-//func (c *Configurer) HttpServerReadTimeout() time.Duration {
-//	return time.Second * time.Duration(c.data.HttpServer.ReadTimeoutSecond)
-//}
-//func (c *Configurer) HttpServerWriteTimeout() time.Duration {
-//	return time.Second * time.Duration(c.data.HttpServer.WriteTimeoutSecond)
-//}
-//func (c *Configurer) HttpServerIdleTimeout() time.Duration {
-//	return time.Second * time.Duration(c.data.HttpServer.IdleTimeoutSecond)
-//}
-//func (c *Configurer) HttpServerMaxHeaderBytes() int {
-//	return c.data.HttpServer.MaxHeaderBytes
-//}
 
-func (c *Configurer) Version() string {
+func (c *config) Version() string {
 	return c.data.Version
 }
 
 //http
-func (c *Configurer) GetHTTPConfig() *httpServerConf {
+func (c *config) GetHTTPConfig() *httpServerConf {
 	return c.data.HTTPServer
 }
 
 //logger
-func (c *Configurer) GetLoggerConfig() *loggerConf {
+func (c *config) GetLoggerConfig() *loggerConf {
 	return c.data.Logger
 }
 
 //db
-func (c *Configurer) GetDBConfig() *dbConf {
+func (c *config) GetDBConfig() *dbConf {
 	return c.data.DefaultDB
 }
 
-//func (c *Configurer) DBDriverName() string {
-//	return c.data.DB.DriverName
-//}
-//func (c *Configurer) DBDataSourceName() string {
-//	return c.data.DB.DataSourceName
-//
-//}
-//func (c *Configurer) User() string {
-//	return c.data.DB.User
-//
-//}
-//
-//func (c *Configurer) DBName() string {
-//	return c.data.DB.DBName
-//
-//}
-//func (c *Configurer) Password() string {
-//	return c.data.DB.pas
-//
-//}
