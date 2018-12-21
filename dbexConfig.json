@@ -1,0 +1,26 @@
+{
+	"Version":"1.0",
+	"HTTPServer":{
+		"Address":"127.0.0.1",
+		"Port":"20000",
+		"ReadTimeoutSecond":10,
+		"WriteTimeoutSecond":10,
+		"IdleTimeoutSecond":10,
+		"MaxHeaderBytes":1048576
+	},
+	"DefaultDB":{
+		"DriverName":"mysql",
+		"DataSourceName":"root:cl3m/4db@tcp(localhost:3306)/live",
+		"User":"root",
+		"Password":"cl3m/4db",
+		"Net":"tcp",
+		"Address":"localhost:3306",
+		"DBName":"live",
+		"Timeout":"1m2s",
+		"ReadTimeout":"2s",
+		"WriteTimeout":"2s"
+	},
+	"Logger":{
+		"LogFileNamePrefix":"dbex"
+	}
+}
