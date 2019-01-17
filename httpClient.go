@@ -2,17 +2,17 @@ package dbex
 
 import (
 	"errors"
-	"net/http"
-	"time"
-	"strings"
 	"io/ioutil"
+	"net/http"
+	"strings"
+	"time"
 )
 
 type httpClient struct {
 	address   string
 	port      string
 	url       string
-	client *http.Client
+	client    *http.Client
 	postURI   string
 	postQuery string
 }

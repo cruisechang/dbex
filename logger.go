@@ -1,11 +1,11 @@
 package dbex
 
 import (
-	"time"
-	"os"
 	"fmt"
 	goLog "log"
+	"os"
 	"runtime"
+	"time"
 )
 
 type Level uint8

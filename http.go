@@ -3,15 +3,16 @@ package dbex
 import (
 	"context"
 	"errors"
-	goHTTP "net/http"
-	"time"
-	"github.com/gorilla/mux"
-	"os"
-	"strings"
-	"net"
-	"os/signal"
-	"syscall"
 	"fmt"
+	"net"
+	goHTTP "net/http"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
+	"time"
+
+	"github.com/gorilla/mux"
 )
 
 type httpParameter struct {
@@ -43,7 +44,7 @@ func NewHTTPServer(params *httpParameter) (s *httpServer, err error) {
 		return nil, errors.New("port error ")
 	}
 
-		r := mux.NewRouter()
+	r := mux.NewRouter()
 
 	sv := &httpServer{
 		router: r,
@@ -63,15 +64,15 @@ func NewHTTPServer(params *httpParameter) (s *httpServer, err error) {
 }
 
 //Start starts service.
-func (s *httpServer) Start() error{
-	go func(){
+func (s *httpServer) Start() error {
+	go func() {
 		defer func() {
 			if r := recover(); r != nil {
 			}
 		}()
 
-		if err:=s.server.ListenAndServe();err!=nil{
-			panic(fmt.Sprintf("server listenAndServer error =%s",err.Error()))
+		if err := s.server.ListenAndServe(); err != nil {
+			panic(fmt.Sprintf("server listenAndServer error =%s", err.Error()))
 		}
 	}()
 	return nil
@@ -97,7 +98,7 @@ func (s *httpServer) handleCtrlC() {
 	}()
 }
 
-func (s *httpServer)GetRouter()*mux.Router{
+func (s *httpServer) GetRouter() *mux.Router {
 	return s.router
 }
 

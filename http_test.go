@@ -4,7 +4,6 @@ import (
 	"testing"
 )
 
-
 func Test_server(t *testing.T) {
 	//req, err := http.NewRequest("GET", "/health", nil)
 	//if err != nil {

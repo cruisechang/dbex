@@ -11,7 +11,7 @@ import (
 
 func TestNewDB(t *testing.T){
 
-	conf, err := NewConfigurer("dbexConfig.json")
+	conf, err := newConfigurer("dbexConfig.json")
 	if err != nil {
 		t.Fatalf("TestNewDB err=%s", err.Error())
 	}
@@ -33,7 +33,7 @@ func TestNewDB(t *testing.T){
 		t.Fatalf("TestNewDB parse write timeout duration err=%s", err.Error())
 	}
 
-	dbConf := &DBParameter{
+	dbConf := &dbParameter{
 		DriverName:dbc.DriverName,
 		User:         dbc.User,
 		Password:       dbc.Password,
@@ -54,8 +54,8 @@ func TestNewDB(t *testing.T){
 
 }
 
-func getDB()*db{
-	conf, _ := NewConfigurer("dbexConfig.json")
+func getDB()*DB{
+	conf, _ := newConfigurer("dbexConfig.json")
 
 	dbc := conf.GetDBConfig()
 
@@ -64,7 +64,7 @@ func getDB()*db{
 	rm, _ := time.ParseDuration(dbc.ReadTimeout)
 	wm, _ := time.ParseDuration(dbc.WriteTimeout)
 
-	dbConf := &DBParameter{
+	dbConf := &dbParameter{
 		DriverName:dbc.DriverName,
 		User:         dbc.User,
 		Password:       dbc.Password,

@@ -2,14 +2,15 @@ package dbex
 
 import (
 	"database/sql"
-	goMysql "github.com/go-sql-driver/mysql"
 	"time"
+
+	goMysql "github.com/go-sql-driver/mysql"
 )
 
 type dbParameter struct {
 	DriverName   string
 	User         string        // Username
-	Password       string        // Password (requires User)
+	Password     string        // Password (requires User)
 	Net          string        // Network type
 	Addr         string        // Network address (requires Net)
 	DBName       string        // Database name
@@ -21,7 +22,6 @@ type DB struct {
 	sqlDB  *sql.DB
 	config *dbParameter
 }
-
 
 type DBStats struct {
 	MaxOpenConnections int // Maximum number of open connections to the database; added in Go 1.11
@@ -47,13 +47,12 @@ func newDB(dbConfig *dbParameter) (*DB, error) {
 	conf := goMysql.NewConfig()
 	conf.User = dbConfig.User
 	conf.Passwd = dbConfig.Password
-	conf.Net=dbConfig.Net
-	conf.Addr=dbConfig.Addr
+	conf.Net = dbConfig.Net
+	conf.Addr = dbConfig.Addr
 	conf.DBName = dbConfig.DBName
 	conf.WriteTimeout = dbConfig.WriteTimeout
 	conf.ReadTimeout = dbConfig.ReadTimeout
 	conf.Timeout = dbConfig.Timeout
-
 
 	formatStr := conf.FormatDSN()
 
@@ -63,7 +62,7 @@ func newDB(dbConfig *dbParameter) (*DB, error) {
 		return nil, err
 	}
 
-	err=sdb.Ping()
+	err = sdb.Ping()
 	if err != nil {
 		return nil, err
 	}
@@ -74,13 +73,14 @@ func newDB(dbConfig *dbParameter) (*DB, error) {
 	}, nil
 }
 
-func(db *DB)GetSQLDB()*sql.DB {
+func (db *DB) GetSQLDB() *sql.DB {
 	return db.sqlDB
 }
 
 func (db *DB) Close() {
 	db.sqlDB.Close()
 }
+
 /*
 
 func (db *db) Ping() error {
@@ -108,7 +108,7 @@ func (db *DB) SelectTableNames() ([]string, error) {
 
 	var tableName string
 	//rows, err := db.sqlDB.Query("SELECT table_name FROM information_schema.tables where table_schema  = '" + db.config.DBName + "'")
-	rows, err := db.sqlDB.Query("SELECT table_name FROM information_schema.tables where table_schema  = ?","live")
+	rows, err := db.sqlDB.Query("SELECT table_name FROM information_schema.tables where table_schema  = ?", "live")
 	if err != nil {
 		return nil, err
 	}

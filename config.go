@@ -1,11 +1,11 @@
 package dbex
 
 import (
-	"io/ioutil"
-	"encoding/json"
-	"path/filepath"
-	"os"
 	"bytes"
+	"encoding/json"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
 //Config config main struct
@@ -57,10 +57,10 @@ func getFilePosition(fileName string) string {
 }
 
 type confData struct {
-	Version    string `json:"Version"`
+	Version    string          `json:"Version"`
 	HTTPServer *httpServerConf `json:"HttpServer"`
-	DefaultDB  *dbConf `json:"DefaultDB"`
-	Logger     *loggerConf `json:"Logger"`
+	DefaultDB  *dbConf         `json:"DefaultDB"`
+	Logger     *loggerConf     `json:"Logger"`
 }
 
 type httpServerConf struct {
@@ -87,7 +87,6 @@ type loggerConf struct {
 	LogFileNamePrefix string
 }
 
-
 func (c *config) Version() string {
 	return c.data.Version
 }
@@ -106,4 +105,3 @@ func (c *config) GetLoggerConfig() *loggerConf {
 func (c *config) GetDBConfig() *dbConf {
 	return c.data.DefaultDB
 }
-
