@@ -3,14 +3,19 @@ package dbex
 import (
 	"time"
 )
-type dbex struct {
+
+//DBEX is main struct, do not init this struct.
+//using NewDBEX function
+type DBEX struct {
 	Configure  *config
 	DB         *DB
 	Logger     *Logger
-	HttpServer *httpServer
+	HTTPServer *httpServer
+	HTTPClient *httpClient
 }
 
-func NewDBEX(configFilePath string) (*dbex, error) {
+//NewDBEX returns a dbex structure with config file path parameter passed in.
+func NewDBEX(configFilePath string) (*DBEX, error) {
 
 	conf, err := newConfigurer(configFilePath)
 	if err != nil {
@@ -62,10 +67,10 @@ func NewDBEX(configFilePath string) (*dbex, error) {
 		return nil, err
 	}
 
-	return &dbex{
+	return &DBEX{
 		Logger:     logger,
 		Configure:  conf,
 		DB:         db,
-		HttpServer: hs,
+		HTTPServer: hs,
 	}, nil
 }
