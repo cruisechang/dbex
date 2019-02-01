@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"net"
 	goHTTP "net/http"
 	"os"
@@ -68,6 +69,7 @@ func (s *httpServer) Start() error {
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
+				log.Printf("dbex start panic=%v", r)
 			}
 		}()
 
@@ -75,6 +77,7 @@ func (s *httpServer) Start() error {
 			panic(fmt.Sprintf("server listenAndServer error =%s", err.Error()))
 		}
 	}()
+
 	return nil
 }
 
